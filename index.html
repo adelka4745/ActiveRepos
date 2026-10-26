@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SovaTeam | gOS & ShellClock</title>
+    <style>
+        :root {
+            --bg-color: #0f0f13;
+            --surface-color: #1e1e24;
+            --surface-variant: #2c2c36;
+            --primary: #d0bcff;
+            --on-primary: #381e72;
+            --text-main: #e6e1e5;
+            --text-muted: #cac4d0;
+            --font-size-base: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: var(--font-size-base);
+            transition: background-color 0.3s, color 0.3s;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.4);
+        }
+
+        button, input, .nav-btn, .btn {
+            text-shadow: none;
+        }
+
+        /* Запрет выделения текста для пасхалки */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Навигация --- */
+        nav {
+            background-color: var(--surface-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background-color: rgba(30, 30, 36, 0.85);
+            border-bottom: 1px solid var(--surface-variant);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--surface-variant);
+            color: var(--text-main);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: var(--on-primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* --- Контент --- */
+        main {
+            flex: 1;
+            padding: 3rem 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Карточки --- */
+        .card {
+            background-color: var(--surface-color);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transition: var(--transition);
+            border: 1px solid var(--surface-variant);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- Кнопки --- */
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--on-primary);
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--on-primary);
+        }
+
+        /* --- Бейджи и Код --- */
+        .badge {
+            display: inline-block;
+            background-color: #ff9800;
+            color: #000;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+
+        .mono {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: var(--surface-variant);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #82b1ff;
+        }
+
+        /* --- Сетка --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* --- Настройки --- */
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--surface-variant);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .color-dot:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+
+        input[type=range] {
+            width: 150px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* --- Футер --- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--surface-variant);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <nav>
+        <button class="nav-btn active" onclick="openTab('home', this)">Главная</button>
+        <button class="nav-btn" onclick="openTab('shellclock', this)">ShellClock</button>
+        <button class="nav-btn" onclick="openTab('gos', this)">gOS</button>
+        <button class="nav-btn" onclick="openTab('about', this)">Про компанию</button>
+        <button class="nav-btn" onclick="openTab('settings', this)">Настройки</button>
+    </nav>
+
+    <main>
+        <!-- Главная -->
+        <div id="home" class="tab-content active">
+            <!-- ПАСХАЛКА: клик по этому заголовку 7 раз -->
+            <h1 class="no-select" style="cursor: pointer;" onclick="handleEasterEgg()">Привет, я Адель</h1>
+            <p>Я — независимый разработчик из Казани. Пишу на Kotlin и C. В своих проектах я использую искусственный интеллект как инструмент для ускорения разработки, дизайна и решения сложных задач.</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>🕰️ ShellClock</h3>
+                    <p>Стильные часы для Android на Jetpack Compose. Мировое время, будильники, таймер с колёсиками и 14 тем оформления.</p>
+                    <button class="btn" onclick="openTab('shellclock', document.querySelectorAll('.nav-btn')[1])">Узнать больше</button>
+                </div>
+                <div class="card">
+                    <h3>🖥️ gOS</h3>
+                    <p>Моя графическая операционная система. Полностью с нуля на C.</p>
+                    <span class="badge">В разработке</span>
+                    <br><br>
+                    <button class="btn btn-outline" onclick="openTab('gos', document.querySelectorAll('.nav-btn')[2])">Подробнее</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ShellClock -->
+        <div id="shellclock" class="tab-content">
+            <h1>ShellClock 4.0</h1>
+            <p>Моё флагманское приложение для просмотра времени на Android.</p>
+
+            <div class="card">
+                <h2>Что внутри?</h2>
+                <ul style="color: var(--text-muted); margin-left: 20px; margin-bottom: 20px;">
+                    <li>Часы с показом даты и заряда батареи.</li>
+                    <li>Мировое время (более 100 городов).</li>
+                    <li>Секундомер с кругами.</li>
+                    <li>Таймер с крутыми колёсиками.</li>
+                    <li>Будильники с сохранением в файлы <span class="mono">.sca</span>.</li>
+                    <li>Встроенный браузер GitHub.</li>
+                    <li>14 тем оформления (включая Material You).</li>
+                </ul>
+                <a href="https://github.com/adelka4745/ShellClock" target="_blank" class="btn">Скачать на GitHub</a>
+            </div>
+        </div>
+
+        <!-- gOS -->
+        <div id="gos" class="tab-content">
+            <h1>GraphicsOS <span class="badge">В разработке</span></h1>
+            <p>gOS — это моя графическая операционная система, которую я разрабатываю с нуля. Своё ядро, свои драйверы, свой интерфейс.</p>
+
+            <div class="card">
+                <h2>Текущий статус</h2>
+                <p>Сейчас я пишу ядро на C, настраиваю файловую систему и пытаюсь заставить видеокарту рисовать пиксели в VMware. Основные файлы ядра: <span class="mono">fs.c</span>, <span class="mono">kernel.c</span>, <span class="mono">task.c</span>.</p>
+                <button class="btn btn-outline" disabled>Скачать ISO (скоро)</button>
+            </div>
+        </div>
+
+        <!-- Про компанию -->
+        <div id="about" class="tab-content">
+            <h1>Про SovaTeam</h1>
+            <p>SovaTeam (в документации также известна как Shell Inc.) — это проект одного разработчика. Меня зовут Адель, я из Казани.</p>
+            
+            <div class="card">
+                <h2>Моя миссия</h2>
+                <p>Я верю, что программы должны быть легкими, быстрыми и уважать приватность пользователя. Никакой рекламы, никакого трекинга. Только чистый код и красивый дизайн. ИИ помогает мне в этом, но все идеи и финальные решения — мои.</p>
+            </div>
+
+            <div class="card">
+                <h2>Связаться со мной</h2>
+                <p>Я открыт для идей и предложений. Пиши мне на GitHub или в Telegram.</p>
+                <a href="https://github.com/adelka4745" target="_blank" class="btn">Мой GitHub</a>
+            </div>
+        </div>
+
+        <!-- Настройки -->
+        <div id="settings" class="tab-content">
+            <h1>Настройки сайта</h1>
+            <p>Настрой внешний вид сайта под себя. Изменения применяются мгновенно.</p>
+
+            <div class="card">
+                <div class="settings-row">
+                    <span>Тема оформления</span>
+                    <button class="btn btn-outline" onclick="toggleTheme()">Светлая / Тёмная</button>
+                </div>
+
+                <div class="settings-row">
+                    <span>Акцентный цвет</span>
+                    <div class="color-options">
+                        <div class="color-dot" style="background: #d0bcff;" onclick="setAccent('#d0bcff', '#381e72')"></div>
+                        <div class="color-dot" style="background: #82b1ff;" onclick="setAccent('#82b1ff', '#003c8f')"></div>
+                        <div class="color-dot" style="background: #b9f6ca;" onclick="setAccent('#b9f6ca', '#004d40')"></div>
+                        <div class="color-dot" style="background: #ffb74d;" onclick="setAccent('#ffb74d', '#4e2c00')"></div>
+                        <div class="color-dot" style="background: #ff8a80;" onclick="setAccent('#ff8a80', '#5c0000')"></div>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <span>Размер текста</span>
+                    <input type="range" min="14" max="22" value="16" oninput="changeFontSize(this.value)">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 SovaTeam / Shell Inc. Сделано в Казани. 🦉
+    </footer>
+
+    <script>
+        // Переключение вкладок
+        function openTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Смена темы
+        function toggleTheme() {
+            const root = document.documentElement;
+            const isDark = root.style.getPropertyValue('--bg-color') !== '#f5f5f5';
+            
+            if (isDark) {
+                root.style.setProperty('--bg-color', '#f5f5f5');
+                root.style.setProperty('--surface-color', '#ffffff');
+                root.style.setProperty('--surface-variant', '#e0e0e0');
+                root.style.setProperty('--text-main', '#1a1a1a');
+                root.style.setProperty('--text-muted', '#555555');
+            } else {
+                root.style.setProperty('--bg-color', '#0f0f13');
+                root.style.setProperty('--surface-color', '#1e1e24');
+                root.style.setProperty('--surface-variant', '#2c2c36');
+                root.style.setProperty('--text-main', '#e6e1e5');
+                root.style.setProperty('--text-muted', '#cac4d0');
+            }
+        }
+
+        // Смена акцентного цвета
+        function setAccent(primaryColor, onPrimaryColor) {
+            const root = document.documentElement;
+            root.style.setProperty('--primary', primaryColor);
+            root.style.setProperty('--on-primary', onPrimaryColor);
+        }
+
+        // Смена размера шрифта
+        function changeFontSize(size) {
+            document.documentElement.style.setProperty('--font-size-base', size + 'px');
+        }
+
+        // --- ПАСХАЛКА ---
+        let clickCount = 0;
+        let lastClickTime = 0;
+
+        function handleEasterEgg() {
+            const currentTime = new Date().getTime();
+            
+            // Если между кликами прошло больше 1.5 секунд, сбрасываем счетчик
+            if (currentTime - lastClickTime > 1500) {
+                clickCount = 0;
+            }
+            
+            clickCount++;
+            lastClickTime = currentTime;
+
+            // Если кликнули 7 раз
+            if (clickCount === 7) {
+                triggerConfetti(); // Запускаем конфетти
+                setTimeout(() => {
+                    alert("🦉 Поздравляю! Ты нашел пасхалку от SovaTeam!\n\nСекрет: я использую ИИ, чтобы писать код, но все идеи — мои. 🚀");
+                    clickCount = 0; // Сбрасываем
+                }, 300);
+            }
+        }
+
+        // Простая имитация конфетти (вылетающие квадратики)
+        function triggerConfetti() {
+            const colors = ['#d0bcff', '#82b1ff', '#b9f6ca', '#ffb74d', '#ff8a80'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '9999';
+                confetti.style.borderRadius = '50%';
+                confetti.style.transition = 'transform 2s ease-in, opacity 2s ease-in';
+                
+                document.body.appendChild(confetti);
+
+                // Заставляем падать
+                setTimeout(() => {
+                    confetti.style.transform = `translateY(100vh) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.opacity = '0';
+                }, 10);
+
+                // Удаляем через 2 секунды
+                setTimeout(() => {
+                    confetti.remove();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
