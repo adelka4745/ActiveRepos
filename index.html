@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SovaTeam | gOS & ShellClock</title>
+    <title>SovaTeam | ShellClock</title>
     <style>
         :root {
             --bg-color: #0f0f13;
@@ -40,7 +40,6 @@
             text-shadow: none;
         }
 
-        /* Запрет выделения текста для пасхалки */
         .no-select {
             user-select: none;
             -webkit-user-select: none;
@@ -49,7 +48,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- Навигация --- */
         nav {
             background-color: var(--surface-color);
             padding: 1rem;
@@ -90,7 +88,6 @@
             box-shadow: 0 0 15px var(--primary);
         }
 
-        /* --- Контент --- */
         main {
             flex: 1;
             padding: 3rem 1.5rem;
@@ -130,7 +127,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* --- Карточки --- */
         .card {
             background-color: var(--surface-color);
             border-radius: 24px;
@@ -146,12 +142,6 @@
             box-shadow: 0 12px 40px rgba(0,0,0,0.4);
         }
 
-        .card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
-
-        /* --- Кнопки --- */
         .btn {
             display: inline-block;
             background-color: var(--primary);
@@ -183,7 +173,6 @@
             color: var(--on-primary);
         }
 
-        /* --- Бейджи и Код --- */
         .badge {
             display: inline-block;
             background-color: #ff9800;
@@ -208,14 +197,12 @@
             color: #82b1ff;
         }
 
-        /* --- Сетка --- */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        /* --- Настройки --- */
         .settings-row {
             display: flex;
             justify-content: space-between;
@@ -255,7 +242,6 @@
             accent-color: var(--primary);
         }
 
-        /* --- Футер --- */
         footer {
             text-align: center;
             padding: 2rem;
@@ -267,21 +253,17 @@
 </head>
 <body>
 
-    <!-- Навигация -->
     <nav>
         <button class="nav-btn active" onclick="openTab('home', this)">Главная</button>
         <button class="nav-btn" onclick="openTab('shellclock', this)">ShellClock</button>
-        <button class="nav-btn" onclick="openTab('gos', this)">gOS</button>
         <button class="nav-btn" onclick="openTab('about', this)">Про компанию</button>
         <button class="nav-btn" onclick="openTab('settings', this)">Настройки</button>
     </nav>
 
     <main>
-        <!-- Главная -->
         <div id="home" class="tab-content active">
-            <!-- ПАСХАЛКА: клик по этому заголовку 7 раз -->
             <h1 class="no-select" style="cursor: pointer;" onclick="handleEasterEgg()">Привет, я Адель</h1>
-            <p>Я — независимый разработчик из Казани. Пишу на Kotlin и C. В своих проектах я использую искусственный интеллект как инструмент для ускорения разработки, дизайна и решения сложных задач.</p>
+            <p>Я — независимый разработчик из Казани. Пишу на Kotlin. В своих проектах я использую искусственный интеллект как инструмент для ускорения разработки, дизайна и решения сложных задач.</p>
             
             <div class="grid">
                 <div class="card">
@@ -289,17 +271,9 @@
                     <p>Стильные часы для Android на Jetpack Compose. Мировое время, будильники, таймер с колёсиками и 14 тем оформления.</p>
                     <button class="btn" onclick="openTab('shellclock', document.querySelectorAll('.nav-btn')[1])">Узнать больше</button>
                 </div>
-                <div class="card">
-                    <h3>🖥️ gOS</h3>
-                    <p>Моя графическая операционная система. Полностью с нуля на C.</p>
-                    <span class="badge">В разработке</span>
-                    <br><br>
-                    <button class="btn btn-outline" onclick="openTab('gos', document.querySelectorAll('.nav-btn')[2])">Подробнее</button>
-                </div>
             </div>
         </div>
 
-        <!-- ShellClock -->
         <div id="shellclock" class="tab-content">
             <h1>ShellClock 4.0</h1>
             <p>Моё флагманское приложение для просмотра времени на Android.</p>
@@ -319,19 +293,6 @@
             </div>
         </div>
 
-        <!-- gOS -->
-        <div id="gos" class="tab-content">
-            <h1>GraphicsOS <span class="badge">В разработке</span></h1>
-            <p>gOS — это моя графическая операционная система, которую я разрабатываю с нуля. Своё ядро, свои драйверы, свой интерфейс.</p>
-
-            <div class="card">
-                <h2>Текущий статус</h2>
-                <p>Сейчас я пишу ядро на C, настраиваю файловую систему и пытаюсь заставить видеокарту рисовать пиксели в VMware. Основные файлы ядра: <span class="mono">fs.c</span>, <span class="mono">kernel.c</span>, <span class="mono">task.c</span>.</p>
-                <button class="btn btn-outline" disabled>Скачать ISO (скоро)</button>
-            </div>
-        </div>
-
-        <!-- Про компанию -->
         <div id="about" class="tab-content">
             <h1>Про SovaTeam</h1>
             <p>SovaTeam (в документации также известна как Shell Inc.) — это проект одного разработчика. Меня зовут Адель, я из Казани.</p>
@@ -348,7 +309,6 @@
             </div>
         </div>
 
-        <!-- Настройки -->
         <div id="settings" class="tab-content">
             <h1>Настройки сайта</h1>
             <p>Настрой внешний вид сайта под себя. Изменения применяются мгновенно.</p>
@@ -383,7 +343,6 @@
     </footer>
 
     <script>
-        // Переключение вкладок
         function openTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -392,7 +351,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Смена темы
         function toggleTheme() {
             const root = document.documentElement;
             const isDark = root.style.getPropertyValue('--bg-color') !== '#f5f5f5';
@@ -412,26 +370,22 @@
             }
         }
 
-        // Смена акцентного цвета
         function setAccent(primaryColor, onPrimaryColor) {
             const root = document.documentElement;
             root.style.setProperty('--primary', primaryColor);
             root.style.setProperty('--on-primary', onPrimaryColor);
         }
 
-        // Смена размера шрифта
         function changeFontSize(size) {
             document.documentElement.style.setProperty('--font-size-base', size + 'px');
         }
 
-        // --- ПАСХАЛКА ---
         let clickCount = 0;
         let lastClickTime = 0;
 
         function handleEasterEgg() {
             const currentTime = new Date().getTime();
             
-            // Если между кликами прошло больше 1.5 секунд, сбрасываем счетчик
             if (currentTime - lastClickTime > 1500) {
                 clickCount = 0;
             }
@@ -439,17 +393,15 @@
             clickCount++;
             lastClickTime = currentTime;
 
-            // Если кликнули 7 раз
             if (clickCount === 7) {
-                triggerConfetti(); // Запускаем конфетти
+                triggerConfetti();
                 setTimeout(() => {
                     alert("🦉 Поздравляю! Ты нашел пасхалку от SovaTeam!\n\nСекрет: я использую ИИ, чтобы писать код, но все идеи — мои. 🚀");
-                    clickCount = 0; // Сбрасываем
+                    clickCount = 0;
                 }, 300);
             }
         }
 
-        // Простая имитация конфетти (вылетающие квадратики)
         function triggerConfetti() {
             const colors = ['#d0bcff', '#82b1ff', '#b9f6ca', '#ffb74d', '#ff8a80'];
             for (let i = 0; i < 50; i++) {
@@ -466,13 +418,11 @@
                 
                 document.body.appendChild(confetti);
 
-                // Заставляем падать
                 setTimeout(() => {
                     confetti.style.transform = `translateY(100vh) rotate(${Math.random() * 360}deg)`;
                     confetti.style.opacity = '0';
                 }, 10);
 
-                // Удаляем через 2 секунды
                 setTimeout(() => {
                     confetti.remove();
                 }, 2000);
